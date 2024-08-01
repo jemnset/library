@@ -157,6 +157,7 @@ addBookBtn.addEventListener("click", () => {
 
 cancelBtn.addEventListener("click", (e) => {
     e.preventDefault();
+    addBookForm.reset();
     addBookDialog.close();
 });
 
