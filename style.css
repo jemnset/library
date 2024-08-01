@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 :root{
-    --main-color: rgb(185,199,180);
-    --secondary-color: rgb(246,245,244);
+    --main-color: rgb(164, 177, 160);
+    --card-color: rgb(246,245,244);
+    --secondary-color: rgb(241,241,239);
+    --header-font: 'Libre Baskerville', serif;
 }
 
 * {
@@ -27,18 +29,77 @@ body{
     justify-content: center;
     align-items: center;
     font-size: 72pt;
-    font-family: 'Libre Baskerville', serif;
+    font-family: var(--header-font);
     font-style: italic;
-    color: var(--secondary-color)
+    color: var(--secondary-color);
 }
 
 .header img{
     height: 100px;
 }
 
-.bookCollection{
-    background-color: var(--secondary-color);
+.container{
     height: 100%;
+}
+
+button{
+    background-color: var(--main-color);
+    border-style: none;
+    color: white;
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    font-size: 12pt;
+}
+
+.bookCollection{
+    margin: 30px;
+    border-style: solid;
+    border-color: var(--secondary-color);
+    border-radius: 5px;
+}
+
+.bookCollectionHeader{
+    background-color: var(--secondary-color);
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px 10px 20px;
+    font-size: 12pt;
+}
+
+.bookCollectionBody{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+
+.bookCard{
+    border-style: solid;
+    border-color: var(--secondary-color);
+    border-radius: 10px;
+    height: auto;
+    width: 250px;
+}
+
+.bookHeader{
+    background-color: var(--secondary-color);
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px 0 10px;
+}
+
+.bookMain{
+    padding: 30px;
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
+}
+
+.bookMain .title{
+    font-weight: 500;
 }
 
 .footer{
@@ -55,4 +116,90 @@ body{
     color: var(--secondary-color);
     text-decoration: none;
     
+}
+
+/***************************
+* Dialog 
+****************************/
+
+::backdrop {
+    background-image: linear-gradient(
+        var(--main-color),
+        var(--secondary-color)
+    );
+    opacity: 0.75;
+  }
+
+.addBookDialog{
+    width: 400px;
+    height: 400px;
+    background-color: #ffffff;
+    border: 1px solid var(--main-color);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 0px 10px #cccccc;
+    border-radius: 10px;
+    z-index:1000;
+}
+
+.addBookForm{
+    width: 400px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.addBookFormHeader{
+    background-color: var(--main-color);
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px 10px 20px;
+    font-size: 16pt;
+    font-weight: 500;
+    color: white;
+}
+
+.addBookFormBody{
+    display: grid;
+    grid-template-columns: 0.5fr 1.5fr;
+    height: 100%;
+    padding: 30px;
+    align-items: center;
+}
+
+.addBookFormBody input[type='text'],
+.addBookFormBody input[type='number']{
+    height: 30px;
+    border-radius: 5px;
+    border-color: var(--secondary-color);
+    border-style:solid;
+}
+
+.addBookFormBody input[type='text']:focus,
+.addBookFormBody input[type='number']:focus{
+    outline: none;
+}
+
+legend{
+    padding-bottom: 10px;
+}
+
+.readingStatusRadioBtns{
+    grid-column: 1 / 3;
+    border-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.addBookFormFooter{
+    display: flex;
+    gap: 10px;
+    justify-content: end;
+    align-items: center;
+    padding: 10px 20px 20px 20px;
 }

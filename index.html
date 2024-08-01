@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="library.js"></script>
+    <script src="library.js" defer></script>
     <link rel="stylesheet" href="style.css">
     <title>Odin Project - Library</title>
 </head>
@@ -12,15 +12,38 @@
         <img src="./images/girl-8602014_640.png" alt="girl reading">
         <span>Library</span>
     </div>
-    <div class="bookCollection">
-        <div class="book" value="0">
-            <div class="title">The Hobbit</div>
-            <div class="author">J.R.R Tolkein</div>
-            <div class="pages">295</div>
-            <div class="read">Read</div>
-            <div class="bookBtn">
-                <button class="readBtn">Read</button>
-                <button class="deleteBtn">Delete</button>
+    <div class="container">
+        <div class="bookCollection">
+            <div class="bookCollectionHeader">
+                <span>Book Collection</span>
+                <button class="addBtn">Add Book</button>
+            </div>
+            <div class="bookCollectionBody">
+            <!--<div class="bookCard" value="0">
+                    <div class="bookHeader">
+                        <div class="readingStatus">Completed</div>
+                    </div>
+                    <div class="bookMain">
+                        <div class="title">The Hobbit</div>
+                        <div class="author">J.R.R Tolkein</div>
+                        <div class="pages">295 pages</div>    
+                        <button class="removeBtn">Remove Book</button>
+                    </div>
+                </div>
+                <div class="bookCard" value="1">
+                    <div class="bookHeader">
+                        <div class="readingStatus">Reading</div>
+                        <div class="bookHeaderBtnGroup">
+                            <button class="readBtn">Finished it!</button>
+                        </div>
+                    </div>
+                    <div class="bookMain">
+                        <div class="title">The Storm of Echoes</div>
+                        <div class="author">Christelle Dabos</div>
+                        <div class="pages">540 pages</div>
+                        <button class="removeBtn">Remove Book</button>
+                    </div>
+                </div>-->
             </div>
         </div>
     </div>
@@ -28,4 +51,32 @@
         <span>Image by <a href="https://pixabay.com/users/u_fg0tkeqgiy-26019190/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=8602014">Tim</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=8602014">Pixabay</a></span>
     </div>
 </body>
+<dialog class="addBookDialog">
+    <form class="addBookForm">
+        <div class="addBookFormHeader">Add a New Book</div>
+        <div class="addBookFormBody">
+            <label for="formBookTitle">Title</label>
+            <input type="text" class="formBookTitle" required/>
+            <label for="formBookAuthor">Author</label>
+            <input type="text" class="formBookAuthor" required/>
+            <label for="formBookPages">Pages</label>
+            <input type="number" min="1" class="formBookPages" required/>
+            <fieldset class="readingStatusRadioBtns">
+                <legend>Are you currently reading this book?</legend>
+                <div class="bookStatus">
+                    <input type="radio" name="reading" id="readingRadioBtn" value="1" checked/>
+                    <label for="readingRadioBtn">Currently Reading</label>
+                </div>
+                <div class="bookStatus">
+                    <input type="radio" name="reading" id="completedRadioBtn" value="0"/>
+                    <label for="completedRadioBtn">Completed</label>
+                </div>
+            </fieldset>
+        </div>
+        <div class="addBookFormFooter">
+            <button class="cancelBtn" formnovalidate>Cancel</button>
+            <button type="submit" class="confirmBtn" formmethod="dialog">Confirm</button>
+        </div>
+    </form>
+</dialog>
 </html>
