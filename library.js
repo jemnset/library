@@ -1,195 +1,254 @@
-const bookStatus = ["Completed", "Reading"];
-const myLibrary = [];
-let libraryIndex = 0;
+/**
+ * Book class which stores the title, author, number of pages and the
+ * user's reading status related to the book
+ */
+class Book{
+    #title;
+    #author;
+    #pages;
+    #readingStatus;
 
-function BookRecord (book) {
-    this.book = book;
-    this.index = libraryIndex++;
-}
-
-function Book(title, author, pages, status){
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.readingStatus = status;
-    this.info = function(){
-        return `${this.title} by ${this.author}, ${this.pages} pages, ${bookStatus[this.readingStatus]}`;
+    constructor(title, author, pages, status){
+        this.#title = title;
+        this.#author = author;
+        this.#pages = pages;
+        this.#readingStatus = status;
     }
-}
- 
-function addBookToLibrary(title, author, pages, read){
-    let bookRecord = new BookRecord(new Book(title, author, pages, read));
-    myLibrary.push(bookRecord);
 
-    return bookRecord;
-}
+    getTitle(){
+        return this.#title;
+    }
 
-function getBookRecordFromLibraryByIdx(idx){
-    return myLibrary.find((bookRecord) => {
-        bookRecord.index = idx;
-    });
-}
- 
-function removeBookFromLibrary(bookRecord){
-    //clean up the web page
-    const bookCollection = document.querySelector(".bookCollectionBody");
-    const bookCard = document.querySelector(`.bookCard[data-index="${bookRecord.index}"]`);
+    getAuthor(){
+        return this.#author;
+    }
 
-    bookCollection.removeChild(bookCard);
+    getPages(){
+        return this.#pages;
+    }
 
-    //update the library
-    myLibrary.splice(myLibrary.findIndex(record => record.index === bookRecord.index), 1);
+    getReadingStatus(){
+        return this.#readingStatus;
+    }
 
-}
- 
-function setReadStatusOfBook(bookRecord, readStatus){
-    //update the book object
-    bookRecord.book.read = readStatus;
+    setReadingStatus(status){
+        this.#readingStatus = status;
+    }
 
-    //clean up the web page
-    const bookCard = document.querySelector(`.bookCard[data-index="${bookRecord.index}"]`);
-    bookCard.querySelector(".bookHeader").removeChild(bookCard.querySelector(".bookHeaderBtnGroup"));
-    bookCard.querySelector(".readingStatus").textContent = bookStatus[bookRecord.book.read];
-}
-
-addBookToLibrary("The Hobbit", "J.R.R Tolkien", 295, 0);
-addBookToLibrary("What Feasts At Night", "T. Kingfisher", 147, 1);
-addBookToLibrary("The Storm of Echoes", "Christelle Dabos", 540, 1);
-addBookToLibrary("The Last Graduate", "Naomi Novik", 388, 0);
-
-function displayBooksFromLibrary(){
-    const collection = document.querySelector(".bookCollectionBody");
-
-    for(bookRecord of myLibrary){
-        let bookCard = generateBookCard(bookRecord);
-        collection.appendChild(bookCard);
+    getInfo(){
+        return `${this.#title} by ${this.#author}, ${this.#pages} pages, ${Library.BookStatus[this.#readingStatus]}`;
     }
 }
 
-function generateBookCard(bookRecord){
-    const bookCard = document.createElement("div");
-    bookCard.classList.add("bookCard");
-    bookCard.dataset.index = bookRecord.index;
+/**
+ * Library manages an array of Book Record objects which contain a book and
+ * a unique index that is managed by the library
+ * 
+ * Users have the ability to 
+ * - add books to the library
+ * - remove books from the library
+ * - update the reading status of books from "Reading" to "Completed"
+ */
+class Library{
+    static BookStatus = {
+        COMPLETED: 0, 
+        READING: 1
+    };
 
-    bookCard.appendChild(generateBookHeader(bookRecord));
-    bookCard.appendChild(generateBookMain(bookRecord));
+    #collection = [];
 
-    return bookCard;
-}
+    getBookById(bookID){
+        return this.#collection[bookID];
+    }
 
-function generateBookHeader(bookRecord){
-    const bookHeader = document.createElement("div");
-    bookHeader.classList.add("bookHeader");
+    getBookID(book){
+        return this.#collection.findIndex((record) => record === book);
+    }
 
-    const readingStatus = document.createElement("div");
-    readingStatus.classList.add("readingStatus");
-    readingStatus.textContent = bookStatus[bookRecord.book.readingStatus];
+    getBookCollection(){
+        //provide a copy of the array so that one stored in the Library object is not altered
+        return [...this.#collection];
+    }
 
-    bookHeader.appendChild(readingStatus);
+    addBookToLibrary(title, author, pages, read){
+        let book = new Book(title, author, pages, read);
+        this.#collection.push(book);
 
-    if(bookStatus[bookRecord.book.readingStatus] == 'Reading'){
-        const bookHeaderBtnGroup = document.createElement("div");
-        bookHeaderBtnGroup.classList.add("bookHeaderBtnGroup");
+        return book;
+    }
 
-        const readBtn = document.createElement("button");
-        readBtn.classList.add("readBtn");
-        readBtn.textContent = "Finished it!";
+    removeBookFromLibrary(bookIndex){
+        //update the library
+        this.#collection.splice(bookIndex, 1);
+    }
 
-        readBtn.addEventListener("click", () => {
-            setReadStatusOfBook(bookRecord, bookStatus.indexOf("Completed"));
+    setReadStatusOfBook(bookIndex, newStatus){
+        //update the book object
+        console.log(bookIndex);
+        this.#collection.forEach((book,idx) => {
+            console.log(idx + " " + book.getTitle());
         });
+        this.#collection[bookIndex].setReadingStatus(newStatus);
+    }
+}
 
-        bookHeaderBtnGroup.appendChild(readBtn);
-        bookHeader.appendChild(bookHeaderBtnGroup);
+const ScreenController = (function() {
+    const myLibrary = new Library();
+
+    //DOM elements
+    const bookCollection = document.querySelector(".bookCollectionBody");
+
+    //dialog box DOM elements
+    const addBookForm = document.querySelector(".addBookForm");
+    const addBookBtn = document.querySelector(".addBtn");
+    const addBookDialog = document.querySelector(".addBookDialog");
+
+    const cancelBtn = document.querySelector(".cancelBtn");
+    const confirmBtn = document.querySelector(".confirmBtn");
+
+    const updateDisplay = () => {
+
+        //empty the book collection 
+        bookCollection.textContent = '';
+
+        //recreate the collection
+        for(book of myLibrary.getBookCollection()){
+            let bookCard = generateBookCard(book);
+            bookCollection.appendChild(bookCard);
+        }
     }
 
-    return bookHeader;
-}
-
-function generateBookMain(bookRecord){
-    const bookMain = document.createElement("div");
-    bookMain.classList.add("bookMain");
-
-    const title = document.createElement("div");
-    title.classList.add("title");
-    title.textContent = bookRecord.book.title;
-
-    const author = document.createElement("div");
-    author.classList.add("author");
-    author.textContent = bookRecord.book.author;
-    
-    const pages = document.createElement("div");
-    pages.classList.add("pages");
-    pages.textContent = `${bookRecord.book.pages} pages`;
-
-    const removeBtn = document.createElement("button");
-    removeBtn.classList.add("removeBtn");
-    removeBtn.textContent = "Remove Book";
-
-    removeBtn.addEventListener("click", () => {
-        removeBookFromLibrary(bookRecord);
-    });
-
-    bookMain.appendChild(title);
-    bookMain.appendChild(author);
-    bookMain.appendChild(pages);
-    bookMain.appendChild(removeBtn);
-
-    return bookMain;
-}
-
-displayBooksFromLibrary();
-
-/***********************************
- * Dialog box functions
- ***********************************/
-
-const addBookForm = document.querySelector(".addBookForm");
-const addBookBtn = document.querySelector(".addBtn");
-const addBookDialog = document.querySelector(".addBookDialog");
-
-const cancelBtn = document.querySelector(".cancelBtn");
-const confirmBtn = document.querySelector(".confirmBtn");
-
-addBookBtn.addEventListener("click", () => {
-    addBookDialog.showModal();
-});
-
-cancelBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    addBookForm.reset();
-    addBookDialog.close();
-});
-
-//handle the confirm button event
-confirmBtn.addEventListener("click", (e) => {
-    e.preventDefault(); //prevent submitting to server
-    
-    if(addBookForm.checkValidity()) {
-
-        const titleField = document.querySelector(".formBookTitle");
-        const authorField = document.querySelector(".formBookAuthor");
-        const pagesField = document.querySelector(".formBookPages");
-        const readStatus = document.querySelector("input[name='reading']:checked").value;
+    function generateBookCard(book){
+        const bookCard = document.createElement("div");
         
-        console.log(`${titleField.value} ${authorField.value} ${pagesField.value} ${readStatus}`); 
+        bookCard.classList.add("bookCard");
+        bookCard.dataset.index = myLibrary.getBookID(book);
+    
+        bookCard.appendChild(generateBookHeader(book));
+        bookCard.appendChild(generateBookMain(book));
+    
+        return bookCard;
+    }
 
-        const bookRecord = addBookToLibrary(
-                titleField.value.trim(), 
-                authorField.value.trim(),
-                parseInt(pagesField.value.trim()),
-                parseInt(readStatus)
-            );
+    function generateBookHeader(book){
 
-        const collection = document.querySelector(".bookCollectionBody");
-        let bookCard = generateBookCard(bookRecord);
-        collection.appendChild(bookCard);
+        const bookHeader = document.createElement("div");
+        const readingStatus = document.createElement("div");
+
+        bookHeader.classList.add("bookHeader");
+        readingStatus.classList.add("readingStatus");
+
+        readingStatus.textContent = book.getReadingStatus() === Library.BookStatus.COMPLETED ? "Completed" : "Reading";
+    
+        bookHeader.appendChild(readingStatus);
+    
+        if(book.getReadingStatus() === Library.BookStatus.READING){
+            const bookHeaderBtnGroup = document.createElement("div");
+            const readBtn = document.createElement("button");
+            
+            bookHeaderBtnGroup.classList.add("bookHeaderBtnGroup");
+            readBtn.classList.add("readBtn");
+
+            readBtn.textContent = "Finished it!";
+            readBtn.addEventListener("click", clickHandlerCompletedBtn);
+    
+            bookHeaderBtnGroup.appendChild(readBtn);
+            bookHeader.appendChild(bookHeaderBtnGroup);
+        }
+    
+        return bookHeader;
+    }
+
+    function generateBookMain(book){
+        const bookMain = document.createElement("div");
+        const title = document.createElement("div");
+        const author = document.createElement("div");
+        const pages = document.createElement("div");
+        const removeBtn = document.createElement("button");
+
+        bookMain.classList.add("bookMain");
+        title.classList.add("title"); 
+        removeBtn.classList.add("removeBtn");
         
+        title.textContent = book.getTitle();
+        author.textContent = book.getAuthor();
+        pages.textContent = `${book.getPages()} pages`;
+        removeBtn.textContent = "Remove Book";
+    
+        removeBtn.addEventListener("click", clickHandlerRemoveBookBtn);
+    
+        bookMain.appendChild(title);
+        bookMain.appendChild(author);
+        bookMain.appendChild(pages);
+        bookMain.appendChild(removeBtn);
+    
+        return bookMain;
+    }
+
+    function clickHandlerRemoveBookBtn(e){
+        let bookIdx = e.target.closest(".bookCard").dataset.index;
+        myLibrary.removeBookFromLibrary(bookIdx);
+
+        updateDisplay();
+    }
+
+    function clickHandlerCompletedBtn(e){
+        let bookIdx = e.target.closest(".bookCard").dataset.index;
+        myLibrary.setReadStatusOfBook(bookIdx, Library.BookStatus.COMPLETED);
+        
+        updateDisplay();
+    }
+
+    //dialog box event handlers
+    function clickHandlerAddBookBtn(e){
+        addBookDialog.showModal();
+    }
+
+    function clickHandlerCancelBtn(e){
+        e.preventDefault();
         addBookForm.reset();
         addBookDialog.close();
     }
-    else
-        addBookForm.reportValidity();
-});
+
+    function clickHandlerConfirmBtn(e){
+        e.preventDefault(); //prevent submitting to server
+    
+        if(addBookForm.checkValidity()) {
+
+            const titleField = document.querySelector(".formBookTitle");
+            const authorField = document.querySelector(".formBookAuthor");
+            const pagesField = document.querySelector(".formBookPages");
+            const readStatus = document.querySelector("input[name='reading']:checked").value;
+            
+            console.log(`${titleField.value} ${authorField.value} ${pagesField.value} ${readStatus}`); 
+
+            const book = myLibrary.addBookToLibrary(
+                    titleField.value.trim(), 
+                    authorField.value.trim(),
+                    parseInt(pagesField.value.trim()),
+                    parseInt(readStatus)
+                );
+
+            let bookCard = generateBookCard(book);
+            bookCollection.appendChild(bookCard);
+            
+            addBookForm.reset();
+            addBookDialog.close();
+            updateDisplay();
+        }
+        else
+            addBookForm.reportValidity();
+        }
 
 
+    myLibrary.addBookToLibrary("The Hobbit", "J.R.R Tolkien", 295, 0);
+    myLibrary.addBookToLibrary("What Feasts At Night", "T. Kingfisher", 147, 1);
+    myLibrary.addBookToLibrary("The Storm of Echoes", "Christelle Dabos", 540, 1);
+    myLibrary.addBookToLibrary("The Last Graduate", "Naomi Novik", 388, 0);
+
+    addBookBtn.addEventListener("click", clickHandlerAddBookBtn);
+    cancelBtn.addEventListener("click", clickHandlerCancelBtn);
+    confirmBtn.addEventListener("click", clickHandlerConfirmBtn);
+
+    updateDisplay();
+})();
